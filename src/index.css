@@ -1,1 +1,11 @@
 @import "tailwindcss";
+
+
+@keyframes scan-move {
+  0%, 100% { top: 0%; }
+  50% { top: 100%; }
+}
+
+.animate-scan-manual {
+  animation: scan-move 3s linear infinite;
+}

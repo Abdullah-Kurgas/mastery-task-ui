@@ -1,17 +1,23 @@
 import React from "react";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Navigate,
+} from "react-router-dom";
+import Dashboard from "./pages/Dashboard";
+import DocumentDetails from "./pages/Document-details";
 
 export default function App(): React.ReactElement {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-      <div className="text-center">
-        <h1 className="text-3xl font-bold underline">Welcome to React</h1>
-        <p className="text-xl text-blue-100 mb-8">
-          Built with Vite, React, TypeScript and Tailwind CSS
-        </p>
-        <button className="bg-white text-blue-600 font-bold py-3 px-8 rounded-lg hover:bg-blue-50 transition">
-          Get Started
-        </button>
+    <Router>
+      <div className="min-h-screen bg-slate-50">
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/documents/:id/details" element={<DocumentDetails />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </div>
-    </div>
+    </Router>
   );
 }
