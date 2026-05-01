@@ -9,10 +9,20 @@ export const documentService = {
         return apiManager.get(API_BASE_URL);
     },
 
+    async getDocumentDetails(id: string): Promise<AxiosResponse<Document>> {
+        return apiManager.get(`${API_BASE_URL}/details/${id}`);
+    },
+
     async uploadDocument(document: File): Promise<AxiosResponse<Document>> {
         const formData = new FormData();
         formData.append('document', document);
 
         return apiManager.post(`${API_BASE_URL}/upload`, formData);
+    },
+
+    async updateDocumentData(id: string, changes: any): Promise<Document> {
+        return apiManager.put(`${API_BASE_URL}/${id}`, changes).then(res => res.data);
     }
+
+
 };
