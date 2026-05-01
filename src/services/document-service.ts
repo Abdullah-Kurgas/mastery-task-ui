@@ -5,8 +5,8 @@ import apiManager from "./config";
 const API_BASE_URL = '/api/documents';
 
 export const documentService = {
-    async getDocuments(): Promise<AxiosResponse<Document[]>> {
-        return apiManager.get(API_BASE_URL);
+    async getDocuments(): Promise<Document[]> {
+        return apiManager.get(API_BASE_URL).then(res => res.data);
     },
 
     async getDocumentDetails(id: string): Promise<AxiosResponse<Document>> {

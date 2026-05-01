@@ -18,7 +18,7 @@ export default function App(): React.ReactElement {
       <Router>
         <Toaster position="bottom-right" richColors />
 
-        <div className="min-h-screen bg-slate-50">
+        <div className="flex min-h-screen bg-slate-50">
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route

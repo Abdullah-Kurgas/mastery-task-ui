@@ -1,5 +1,6 @@
 import { useState } from "react";
 import UploadWrapper from "../components/Upload-wrapper";
+import DocumentList from "../components/Document-list";
 
 const Dashboard = (): React.ReactElement => {
   const [documents, setDocuments] = useState([
@@ -20,7 +21,7 @@ const Dashboard = (): React.ReactElement => {
   ]);
 
   return (
-    <div className="min-h-screen bg-slate-50 p-8">
+    <div className="min-h-screen bg-slate-50 p-8 w-full">
       <div className="max-w-5xl mx-auto">
         <header className="mb-8 text-left">
           <h1 className="text-3xl font-bold text-slate-900">
@@ -32,6 +33,8 @@ const Dashboard = (): React.ReactElement => {
         </header>
 
         <UploadWrapper />
+
+        <DocumentList />
       </div>
     </div>
   );

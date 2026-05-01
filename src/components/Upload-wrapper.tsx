@@ -69,7 +69,7 @@ const UploadWrapper = (): React.ReactElement => {
             transition-all duration-300 ease-in-out
             ${
               isDragging
-                ? "border-blue-500 bg-blue-50 shadow-[0_0_20px_rgba(59,130,246,0.15)] scale-[1.01]"
+                ? "border-blue-500 bg-blue-50"
                 : "border-gray-300 bg-transparent"
             }
           `}
@@ -96,7 +96,7 @@ const UploadWrapper = (): React.ReactElement => {
 
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="flex items-center gap-2 px-8 py-3 bg-blue-600 text-white rounded-full font-semibold hover:bg-blue-700 active:scale-95 transition-all shadow-lg shadow-blue-200"
+              className="flex items-center gap-2 px-8 py-3 bg-blue-600 text-white rounded-full font-semibold hover:cursor-pointer hover:bg-blue-700 transition-all"
             >
               <Upload size={20} />
               Upload Files
