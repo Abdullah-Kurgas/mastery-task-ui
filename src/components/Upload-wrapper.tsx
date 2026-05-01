@@ -4,6 +4,7 @@ import { MediaType } from "../enums/media-type";
 import { documentService } from "../services/document-service";
 import ScanningOverlay from "./Scanning-overlay";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const acceptTypes = [
   MediaType.CSV,
@@ -47,12 +48,15 @@ const UploadWrapper = (): React.ReactElement => {
 
       setTimeout(() => {
         setIsScanning(false);
+        toast.success("Successfully uploaded document!");
         navigate(`/documents/${data._id}/details`);
       }, 3000);
     } catch (error) {
       setIsScanning(false);
-      console.error("Upload failed", error);
+      toast.error("Error uploading document!");
     }
+
+    fileInputRef.current!.value = '';
   };
 
   return (
