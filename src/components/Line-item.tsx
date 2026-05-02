@@ -35,7 +35,11 @@ function LineItemC({
         <input
           {...descriptionField}
           type="text"
-          className="w-full border border-gray-200 rounded-lg py-2 px-2.5 focus:outline-none  focus:border-blue-500"
+          className={`w-full border rounded-lg py-2 px-2.5 focus:outline-none  focus:border-blue-500 ${
+            !descriptionField.value
+              ? "border-red-500 focus:ring-red-500"
+              : "border-gray-200"
+          }`}
         />
       </div>
 
@@ -45,7 +49,11 @@ function LineItemC({
           type="number"
           min={1}
           onChange={(e) => handleUpdate(quantityField.name, +e.target.value)}
-          className="w-full border border-gray-200 rounded-lg py-2 px-1 text-sm text-center focus:outline-none focus:border-blue-500"
+          className={`w-full border rounded-lg py-2 px-1 text-sm text-center focus:outline-none focus:border-blue-500 ${
+            !quantityField.value
+              ? "border-red-500 focus:ring-red-500"
+              : "border-gray-200"
+          }`}
         />
       </div>
 
@@ -55,7 +63,11 @@ function LineItemC({
           min={1}
           type="number"
           onChange={(e) => handleUpdate(unitPriceField.name, +e.target.value)}
-          className="w-full border border-gray-200 rounded-lg py-2 px-2 text-sm focus:outline-none focus:border-blue-500"
+          className={`w-full border rounded-lg py-2 px-2 text-sm focus:outline-none focus:border-blue-500 ${
+            !unitPriceField.value
+              ? "border-red-500 focus:ring-red-500"
+              : "border-gray-200"
+          }`}
         />
       </div>
 
