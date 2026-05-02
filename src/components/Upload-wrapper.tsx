@@ -8,8 +8,6 @@ import { toast } from "sonner";
 
 const acceptTypes = [
   MediaType.CSV,
-  MediaType.IMAGEJPEG,
-  MediaType.IMAGEPNG,
   MediaType.PDF,
   MediaType.TXT,
 ];
@@ -56,7 +54,7 @@ const UploadWrapper = (): React.ReactElement => {
       toast.error("Error uploading document!");
     }
 
-    fileInputRef.current!.value = '';
+    fileInputRef.current!.value = "";
   };
 
   return (
@@ -82,7 +80,7 @@ const UploadWrapper = (): React.ReactElement => {
             ref={fileInputRef}
             type="file"
             className="hidden"
-            accept="application/pdf,text/csv,text/plain,image/png,image/jpeg"
+            accept="application/pdf,text/csv,text/plain"
             onChange={(e) => handleFileUpload(e.target.files?.[0]!)}
           />
 
