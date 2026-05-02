@@ -6,11 +6,7 @@ import ScanningOverlay from "./Scanning-overlay";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
-const acceptTypes = [
-  MediaType.CSV,
-  MediaType.PDF,
-  MediaType.TXT,
-];
+const acceptTypes = [MediaType.CSV, MediaType.PDF, MediaType.TXT];
 
 const UploadWrapper = (): React.ReactElement => {
   const [isDragging, setIsDragging] = useState(false);
@@ -49,9 +45,9 @@ const UploadWrapper = (): React.ReactElement => {
         toast.success("Successfully uploaded document!");
         navigate(`/documents/${data._id}/details`);
       }, 3000);
-    } catch (error) {
+    } catch (error: any) {
       setIsScanning(false);
-      toast.error("Error uploading document!");
+      toast.error(error?.response?.data?.error || "Error uploading document!");
     }
 
     fileInputRef.current!.value = "";
