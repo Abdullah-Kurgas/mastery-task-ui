@@ -1,9 +1,9 @@
-import { Calendar, ChevronDown, Percent } from "lucide-react";
+import { Calendar, ChevronDown, Percent, Save } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { documentService } from "../services/document-service";
 import DocumentDetailsSkeleton from "../components/Document-details-skeleton";
 import { useParams } from "react-router-dom";
-import { Formik } from "formik";
+import { Formik, FormikProps } from "formik";
 import { toast } from "sonner";
 import { Document } from "../models/document";
 import LineItemsList from "../components/Line-items-list";
@@ -11,9 +11,15 @@ import DocumentDetailsHeader from "../components/Document-details-header";
 import TotalsWrapper from "../components/Totals-wrapper";
 import { DocumentType } from "../enums/document-type";
 import { docValidationSchema } from "../shema/doc-validation-shema";
+import { useRef } from "react";
+import { DocumentStatus } from "../enums/document-status";
 
 const DocumentDetails = () => {
   const { id } = useParams();
+  const formikRef = useRef<FormikProps<Document>>(null);
+  const subtotalRef = useRef<number>(null);
+  const totalTaxRef = useRef<number>(null);
+  const totalAmountRef = useRef<number>(null);
   const { isLoading, data } = useQuery({
     queryKey: ["documentData", id],
     queryFn: () => documentService.getDocumentDetails(id!),
@@ -30,8 +36,16 @@ const DocumentDetails = () => {
     return updatedDoc;
   };
 
+  const reCalculateTotals = (): void => {
+    if (formikRef.current) {
+      formikRef.current.setFieldValue("subtotal", subtotalRef.current);
+      formikRef.current.setFieldValue("taxAmount", totalTaxRef.current);
+      formikRef.current.setFieldValue("totalAmount", totalAmountRef.current);
+    }
+  };
+
   return (
-    <div className="flex flex-col min-h-screen w-screen bg-gray-50 px-10 p-6 font-sans text-gray-800 overflow-hidden">
+    <div className="flex flex-col min-h-screen w-screen bg-gray-50 px-10 p-6 font-sans text-gray-800 overflow-hidden tabular-nums">
       <DocumentDetailsHeader />
 
       {isLoading ? (
@@ -39,10 +53,11 @@ const DocumentDetails = () => {
       ) : (
         <div className="flex flex-col justify-around lg:flex-row gap-10 h-full overflow-auto">
           <Formik
+            innerRef={formikRef}
             initialValues={data?.data!}
             validationSchema={docValidationSchema}
             validateOnMount={true}
-            onSubmit={async (values, { setSubmitting }) => {
+            onSubmit={async (values, { setSubmitting, resetForm }) => {
               const {
                 _id,
                 createdAt,
@@ -56,9 +71,18 @@ const DocumentDetails = () => {
                 ...changes
               } = values as any;
 
-              toast.promise(updateDocumentData(_id, changes), {
+              const updateParams = {
+                ...changes,
+                taxPercent: +changes.taxPercent,
+                taxAmount: totalTaxRef.current,
+                subtotal: subtotalRef.current,
+                totalAmount: totalAmountRef.current,
+              };
+
+              toast.promise(updateDocumentData(_id, updateParams), {
                 loading: "Updating document data...",
                 success: (data) => {
+                  resetForm({ values: data });
                   return `Successfully updated!, ${data.name}`;
                 },
                 error: (err) => `${err.message}`,
@@ -77,14 +101,15 @@ const DocumentDetails = () => {
               isValid,
               dirty,
             }) => {
-              const subtotal = values.lineItems.reduce(
+              subtotalRef.current = values.lineItems.reduce(
                 (a, b) => a + (b.total || 0),
                 0,
               );
-              const totalTax = Number(
-                (subtotal * ((values.taxPercent || 0) / 100)).toFixed(2),
+              totalTaxRef.current = Number(
+                subtotalRef.current * ((values.taxPercent || 0) / 100),
               );
-              const totalAmount = Number(subtotal) + Number(totalTax);
+              totalAmountRef.current =
+                Number(subtotalRef.current) + Number(totalTaxRef.current);
 
               return (
                 <form onSubmit={handleSubmit}>
@@ -157,7 +182,6 @@ const DocumentDetails = () => {
                           }`}
                           type="text"
                           name="documentNumber"
-                          required
                           onChange={handleChange}
                           onBlur={handleBlur}
                           value={values.documentNumber || ""}
@@ -178,7 +202,6 @@ const DocumentDetails = () => {
                               }`}
                               type="date"
                               name="issueDate"
-                              required
                               onChange={handleChange}
                               onBlur={handleBlur}
                               value={values.issueDate || ""}
@@ -200,7 +223,6 @@ const DocumentDetails = () => {
                               }`}
                               type="date"
                               name="dueDate"
-                              required
                               onChange={handleChange}
                               onBlur={handleBlur}
                               value={values.dueDate || ""}
@@ -252,7 +274,6 @@ const DocumentDetails = () => {
                               }`}
                               type="number"
                               name="taxPercent"
-                              required
                               onChange={handleChange}
                               onBlur={handleBlur}
                               value={values.taxPercent || 0}
@@ -270,21 +291,48 @@ const DocumentDetails = () => {
                       <hr className="border-gray-300 border-dashed my-6" />
 
                       <TotalsWrapper
-                        subtotal={subtotal}
+                        cSubtotal={subtotalRef.current}
+                        cTotalTax={totalTaxRef.current}
+                        cTotalAmount={totalAmountRef.current}
+                        subtotal={values.subtotal || 0}
+                        totalTax={values.taxAmount || 0}
+                        totalAmount={values.totalAmount || 0}
                         currency={values.currency || ""}
-                        totalTax={totalTax}
                         taxPercent={values.taxPercent || 0}
-                        totalAmount={totalAmount}
+                        shouldCheck={values.status != DocumentStatus.VALIDATED}
                       />
                     </div>
 
                     <div>
-                      <div className="flex items-center justify-between w-full gap-10 pt-15">
+                      <div className="flex items-center justify-end w-full gap-3 pt-15">
+                        {(values.totalAmount != totalAmountRef.current ||
+                          values.subtotal != subtotalRef.current ||
+                          values.taxAmount != totalTaxRef.current) &&
+                          values.status != DocumentStatus.VALIDATED && (
+                            <button
+                              type="button"
+                              className="flex items-center gap-2 px-6 py-2.5 rounded-full border border-gray-500 bg-transparent text-gray-800 text-sm font-medium transition-all duration-200
+                                  ease-in-out hover:bg-[#1A1D2D]/5 hover:cursor-pointer disabled:opacity-50
+                                  disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:active:scale-100"
+                              disabled={isSubmitting}
+                              onClick={reCalculateTotals}
+                            >
+                              <span>Recalculate Total</span>
+                            </button>
+                          )}
                         <button
-                          className="flex items-center gap-3 px-6 py-2.5 rounded-full bg-[#1A1D2D] text-white text-sm font-medium transition-all duration-200
-                                  ease-in-out hover:bg-[#2a2f45] active:scale-[0.98] hover:cursor-pointer disabled:opacity-50
+                          className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-[#1A1D2D] text-white text-sm font-medium transition-all duration-200
+                                  ease-in-out border border-transparent hover:bg-[#2a2f45] active:scale-[0.98] hover:cursor-pointer disabled:opacity-50
                                   disabled:cursor-not-allowed disabled:hover:bg-[#1A1D2D] disabled:active:scale-100"
-                          disabled={isSubmitting || !isValid || !dirty}
+                          disabled={
+                            isSubmitting ||
+                            !isValid ||
+                            !dirty ||
+                            ((subtotalRef.current != values.subtotal ||
+                              totalTaxRef.current != values.taxAmount ||
+                              totalAmountRef.current != values.totalAmount) &&
+                              values.status != DocumentStatus.VALIDATED)
+                          }
                         >
                           {isSubmitting ? (
                             <div className="flex gap-[3.5px] px-7.5 py-1.5">
@@ -293,7 +341,10 @@ const DocumentDetails = () => {
                               <span className="h-2 w-2 rounded-full bg-slate-300 animate-[pulse_1s_infinite_400ms]"></span>
                             </div>
                           ) : (
-                            <span>Save changes</span>
+                            <>
+                              <Save size={18} />
+                              <span>Save changes</span>
+                            </>
                           )}
                         </button>
                       </div>

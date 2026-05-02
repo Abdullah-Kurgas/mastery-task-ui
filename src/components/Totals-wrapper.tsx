@@ -1,31 +1,68 @@
+import { CircleAlert } from "lucide-react";
+
 const TotalsWrapper = ({
-  subtotal,
   currency,
-  totalTax,
   taxPercent,
+  cSubtotal,
+  cTotalTax,
+  cTotalAmount,
+  subtotal,
+  totalTax,
   totalAmount,
+  shouldCheck,
 }: {
-  subtotal: number;
   currency: string;
-  totalTax: number;
   taxPercent: number;
+  cSubtotal: number;
+  cTotalTax: number;
+  cTotalAmount: number;
+  subtotal: number;
+  totalTax: number;
   totalAmount: number;
+  shouldCheck: boolean;
 }): React.ReactElement => {
   return (
     <div className="w-full text-sm space-y-2">
       <div className="flex justify-between items-center text-gray-700">
         <span>Subtotal</span>
-        <span className="font-semibold">{subtotal} {currency}</span>
+
+        <div className="flex items-center gap-2">
+          {subtotal != cSubtotal && shouldCheck && (
+            <CircleAlert size={14} color="red" />
+          )}
+
+          <span className="font-semibold">
+            {(shouldCheck ? subtotal : cSubtotal).toFixed(2)} {currency}
+          </span>
+        </div>
       </div>
 
       <div className="flex justify-between items-center text-gray-700">
         <span>Tax Total ({taxPercent}%)</span>
-        <span className="font-semibold">{totalTax} {currency}</span>
+
+        <div className="flex items-center gap-2">
+          {totalTax != cTotalTax && shouldCheck && (
+            <CircleAlert size={14} color="red" />
+          )}
+
+          <span className="font-semibold">
+            {(shouldCheck ? totalTax : cTotalTax).toFixed(2)} {currency}
+          </span>
+        </div>
       </div>
 
       <div className="flex justify-between items-center text-base mt-4">
         <span className="font-bold text-gray-900">Total Amount</span>
-        <span className="font-bold text-gray-900">{totalAmount} {currency}</span>
+
+        <div className="flex items-center gap-2">
+          {totalAmount != cTotalAmount && shouldCheck && (
+            <CircleAlert size={17} color="red" />
+          )}
+
+          <span className="font-bold text-gray-900">
+            {(shouldCheck ? totalAmount : cTotalAmount).toFixed(2)} {currency}
+          </span>
+        </div>
       </div>
     </div>
   );

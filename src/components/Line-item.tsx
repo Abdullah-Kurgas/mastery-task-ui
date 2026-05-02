@@ -73,7 +73,7 @@ function LineItemC({
 
       <div className="w-1/5 relative">
         <div className="w-full rounded-lg py-2 text-end font-bold">
-          <span>{totalField.value}</span>
+          <span>{totalField.value.toFixed(2)}</span>
         </div>
       </div>
     </div>
