@@ -10,6 +10,7 @@ const TotalsWrapper = ({
   totalTax,
   totalAmount,
   shouldCheck,
+  totalsRecalculated
 }: {
   currency: string;
   taxPercent: number;
@@ -20,6 +21,7 @@ const TotalsWrapper = ({
   totalTax: number;
   totalAmount: number;
   shouldCheck: boolean;
+  totalsRecalculated: boolean
 }): React.ReactElement => {
   return (
     <div className="w-full text-sm space-y-2">
@@ -27,12 +29,12 @@ const TotalsWrapper = ({
         <span>Subtotal</span>
 
         <div className="flex items-center gap-2">
-          {subtotal != cSubtotal && shouldCheck && (
+          {subtotal != cSubtotal && shouldCheck && !totalsRecalculated && (
             <CircleAlert size={14} color="red" />
           )}
 
           <span className="font-semibold">
-            {(shouldCheck ? subtotal : cSubtotal).toFixed(2)} {currency}
+            {(shouldCheck && !totalsRecalculated ? subtotal : cSubtotal).toFixed(2)} {currency}
           </span>
         </div>
       </div>
@@ -41,12 +43,12 @@ const TotalsWrapper = ({
         <span>Tax Total ({taxPercent}%)</span>
 
         <div className="flex items-center gap-2">
-          {totalTax != cTotalTax && shouldCheck && (
+          {totalTax != cTotalTax && shouldCheck && !totalsRecalculated && (
             <CircleAlert size={14} color="red" />
           )}
 
           <span className="font-semibold">
-            {(shouldCheck ? totalTax : cTotalTax).toFixed(2)} {currency}
+            {(shouldCheck && !totalsRecalculated ? totalTax : cTotalTax).toFixed(2)} {currency}
           </span>
         </div>
       </div>
@@ -55,12 +57,12 @@ const TotalsWrapper = ({
         <span className="font-bold text-gray-900">Total Amount</span>
 
         <div className="flex items-center gap-2">
-          {totalAmount != cTotalAmount && shouldCheck && (
+          {totalAmount != cTotalAmount && shouldCheck && !totalsRecalculated && (
             <CircleAlert size={17} color="red" />
           )}
 
           <span className="font-bold text-gray-900">
-            {(shouldCheck ? totalAmount : cTotalAmount).toFixed(2)} {currency}
+            {(shouldCheck && !totalsRecalculated ? totalAmount : cTotalAmount).toFixed(2)} {currency}
           </span>
         </div>
       </div>

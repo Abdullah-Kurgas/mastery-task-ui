@@ -11,7 +11,7 @@ import DocumentDetailsHeader from "../components/Document-details-header";
 import TotalsWrapper from "../components/Totals-wrapper";
 import { DocumentType } from "../enums/document-type";
 import { docValidationSchema } from "../shema/doc-validation-shema";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { DocumentStatus } from "../enums/document-status";
 import DocumentDetailsAction from "../components/Document-details-action";
 
@@ -21,6 +21,7 @@ const DocumentDetails = () => {
   const subtotalRef = useRef<number>(null);
   const totalTaxRef = useRef<number>(null);
   const totalAmountRef = useRef<number>(null);
+  const [totalsRecalculated, setTotalsRecalculated] = useState<boolean>(false);
   const { isLoading, data, refetch } = useQuery({
     queryKey: ["documentData", id],
     queryFn: () => documentService.getDocumentDetails(id!),
@@ -305,6 +306,7 @@ const DocumentDetails = () => {
                           shouldCheck={
                             values.status != DocumentStatus.VALIDATED
                           }
+                          totalsRecalculated={totalsRecalculated}
                         />
                       </div>
 
@@ -319,7 +321,9 @@ const DocumentDetails = () => {
                         isSubmitting={isSubmitting}
                         isValid={isValid}
                         dirty={dirty}
+                        totalsRecalculated={totalsRecalculated}
                         reCalculateTotals={reCalculateTotals}
+                        setTotalsRecalculated={setTotalsRecalculated}
                       />
                     </div>
                   </form>

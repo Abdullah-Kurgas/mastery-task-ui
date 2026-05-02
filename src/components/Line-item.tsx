@@ -1,12 +1,17 @@
 import { useField, useFormikContext } from "formik";
+import { Trash2 } from "lucide-react";
+import { MouseEventHandler } from "react";
 
 function LineItemC({
   name,
   index,
+  disableRemove,
+  onRemove,
 }: {
   name: string;
   index: number;
-  onRemove: Function;
+  disableRemove: boolean;
+  onRemove: MouseEventHandler;
 }) {
   const { setFieldValue } = useFormikContext();
 
@@ -43,7 +48,7 @@ function LineItemC({
         />
       </div>
 
-      <div className="w-1/6">
+      <div className="w-1/8">
         <input
           {...quantityField}
           type="number"
@@ -75,6 +80,16 @@ function LineItemC({
         <div className="w-full rounded-lg py-2 text-end font-bold">
           <span>{totalField.value.toFixed(2)}</span>
         </div>
+      </div>
+
+      <div className="flex justify-end w-1/12">
+        <button
+          disabled={disableRemove}
+          onClick={(e) => !disableRemove && onRemove(e)}
+          className="group p-2 rounded-lg transition-colors duration-200 bg-red-50 hover:cursor-pointer hover:bg-red-100 text-red-400 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-red-50"
+        >
+          <Trash2 size={18} />
+        </button>
       </div>
     </div>
   );

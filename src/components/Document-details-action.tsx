@@ -12,7 +12,9 @@ const DocumentDetailsAction = ({
   totalTax,
   totalAmount,
   shouldCheck,
+  totalsRecalculated,
   reCalculateTotals,
+  setTotalsRecalculated,
 }: {
   isSubmitting: boolean;
   isValid: boolean;
@@ -24,22 +26,30 @@ const DocumentDetailsAction = ({
   totalTax: number;
   totalAmount: number;
   shouldCheck: boolean;
+  totalsRecalculated: boolean;
   reCalculateTotals: MouseEventHandler;
+  setTotalsRecalculated: any;
 }): React.ReactElement => {
+  const onReCalculateTotals = (e: React.MouseEvent<Element, MouseEvent>) => {
+    reCalculateTotals(e);
+    setTotalsRecalculated(true);
+  };
+
   return (
     <div>
       <div className="flex items-center justify-end w-full gap-3 pt-15">
         {(totalAmount != cTotalAmount ||
           subtotal != cSubtotal ||
           totalTax != cTotalTax) &&
-          shouldCheck && (
+          shouldCheck &&
+          !totalsRecalculated && (
             <button
               type="button"
               className="flex items-center gap-2 px-6 py-2.5 rounded-full border border-gray-500 bg-transparent text-gray-800 text-sm font-medium transition-all duration-200
                                           ease-in-out hover:bg-[#1A1D2D]/5 hover:cursor-pointer disabled:opacity-50
                                           disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:active:scale-100"
               disabled={isSubmitting}
-              onClick={reCalculateTotals}
+              onClick={onReCalculateTotals}
             >
               <span>Recalculate Total</span>
             </button>
@@ -55,7 +65,8 @@ const DocumentDetailsAction = ({
             ((cSubtotal != subtotal ||
               cTotalTax != totalTax ||
               cTotalAmount != totalAmount) &&
-              shouldCheck)
+              shouldCheck &&
+              !totalsRecalculated)
           }
         >
           {isSubmitting ? (

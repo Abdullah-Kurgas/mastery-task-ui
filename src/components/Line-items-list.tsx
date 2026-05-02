@@ -11,9 +11,10 @@ function LineItemsList({ lineItems }: { lineItems: LineItem[] }) {
 
         <div className="flex gap-2 text-gray-600 mb-2">
           <div className="w-3/5">Description</div>
-          <div className="w-1/6">Quantity</div>
+          <div className="w-1/8">Quantity</div>
           <div className="w-1/5">Price</div>
           <div className="w-1/5 text-end font-bold">Total</div>
+          <div className="w-1/12 text-end font-bold"></div>
         </div>
 
         <FieldArray name="lineItems">
@@ -24,6 +25,7 @@ function LineItemsList({ lineItems }: { lineItems: LineItem[] }) {
                   key={index}
                   name={`lineItems[${index}]`}
                   index={index}
+                  disableRemove={lineItems.length == 1}
                   onRemove={() => remove(index)}
                 />
               ))}
