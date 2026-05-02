@@ -34,7 +34,7 @@ const DocumentDetails = () => {
     <div className="flex flex-col min-h-screen w-screen bg-gray-50 px-10 p-6 font-sans text-gray-800 overflow-hidden">
       <DocumentDetailsHeader />
 
-      {!isLoading ? (
+      {isLoading ? (
         <DocumentDetailsSkeleton />
       ) : (
         <div className="flex flex-col justify-around lg:flex-row gap-10 h-full overflow-auto">
@@ -216,19 +216,27 @@ const DocumentDetails = () => {
                           <label className="block text-gray-600 mb-1">
                             Currency
                           </label>
-                          <input
-                            className={`w-full border rounded-lg p-2.5 focus:outline-none focus:border-blue-500 ${
-                              errors.currency
-                                ? "border-red-500 focus:ring-red-500"
-                                : "border-gray-200"
-                            }`}
-                            type="text"
-                            name="currency"
-                            required
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            value={values.currency || ""}
-                          />
+                          <div className="relative">
+                            <select
+                              name="currency"
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                              value={values.currency || ""}
+                              className={`w-full border rounded-lg p-2.5 appearance-none focus:outline-none focus:border-blue-500 ${
+                                errors.currency
+                                  ? "border-red-500 focus:ring-red-500"
+                                  : "border-gray-200"
+                              }`}
+                            >
+                              <option value={""}>--</option>
+                              <option value="BAM">BAM</option>
+                              <option value="EUR">EUR</option>
+                              <option value="USD">USD</option>
+                              <option value="AED">AED</option>
+                            </select>
+
+                            <ChevronDown className="w-4 h-4 absolute right-3 top-3 text-gray-400" />
+                          </div>
                         </div>
 
                         <div className="w-1/2">
