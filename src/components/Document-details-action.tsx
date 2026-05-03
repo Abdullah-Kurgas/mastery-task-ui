@@ -5,13 +5,9 @@ const DocumentDetailsAction = ({
   isSubmitting,
   isValid,
   dirty,
-  cSubtotal,
-  cTotalTax,
-  cTotalAmount,
-  subtotal,
-  totalTax,
-  totalAmount,
-  shouldCheck,
+  isSubtotalValid,
+  isTotalTaxValid,
+  isTotalAmountValid,
   totalsRecalculated,
   reCalculateTotals,
   setTotalsRecalculated,
@@ -19,13 +15,9 @@ const DocumentDetailsAction = ({
   isSubmitting: boolean;
   isValid: boolean;
   dirty: boolean;
-  cSubtotal: number;
-  cTotalTax: number;
-  cTotalAmount: number;
-  subtotal: number;
-  totalTax: number;
-  totalAmount: number;
-  shouldCheck: boolean;
+  isSubtotalValid: boolean;
+  isTotalTaxValid: boolean;
+  isTotalAmountValid: boolean;
   totalsRecalculated: boolean;
   reCalculateTotals: MouseEventHandler;
   setTotalsRecalculated: any;
@@ -38,10 +30,7 @@ const DocumentDetailsAction = ({
   return (
     <div>
       <div className="flex items-center justify-end w-full gap-3 pt-15">
-        {(totalAmount != cTotalAmount ||
-          subtotal != cSubtotal ||
-          totalTax != cTotalTax) &&
-          shouldCheck &&
+        {(!isSubtotalValid || !isTotalTaxValid || !isTotalAmountValid) &&
           !totalsRecalculated && (
             <button
               type="button"
@@ -62,10 +51,7 @@ const DocumentDetailsAction = ({
             isSubmitting ||
             !isValid ||
             !dirty ||
-            ((cSubtotal != subtotal ||
-              cTotalTax != totalTax ||
-              cTotalAmount != totalAmount) &&
-              shouldCheck &&
+            ((!isSubtotalValid || !isTotalTaxValid || !isTotalAmountValid) &&
               !totalsRecalculated)
           }
         >

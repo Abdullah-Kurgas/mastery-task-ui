@@ -22,4 +22,9 @@ export interface Document {
     lineItems: LineItem[],
     createdAt: Date;
     updatedAt: Date;
+
+    // React query fields
+    cSubtotal: number | null;
+    cTotalTax: number | null;
+    cTotalAmount: number | null;
 }

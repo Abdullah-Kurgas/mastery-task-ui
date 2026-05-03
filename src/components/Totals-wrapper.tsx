@@ -1,40 +1,40 @@
 import { CircleAlert } from "lucide-react";
+import { Document } from "../models/document";
 
 const TotalsWrapper = ({
+  doc,
   currency,
   taxPercent,
-  cSubtotal,
-  cTotalTax,
-  cTotalAmount,
-  subtotal,
-  totalTax,
-  totalAmount,
-  shouldCheck,
-  totalsRecalculated
+  currentSubtotal,
+  currentTotalTax,
+  currentTotalAmount,
+  totalsRecalculated,
 }: {
   currency: string;
   taxPercent: number;
-  cSubtotal: number;
-  cTotalTax: number;
-  cTotalAmount: number;
-  subtotal: number;
-  totalTax: number;
-  totalAmount: number;
-  shouldCheck: boolean;
-  totalsRecalculated: boolean
+  doc: Document;
+  currentSubtotal: number;
+  currentTotalTax: number;
+  currentTotalAmount: number;
+  totalsRecalculated: boolean;
 }): React.ReactElement => {
+  const isSubtotalValid = doc.subtotal == doc.cSubtotal;
+  const isTotalTaxValid = doc.taxAmount == doc.cTotalTax;
+  const isTotalAmountValid = doc.totalAmount == doc.cTotalAmount;
+
   return (
     <div className="w-full text-sm space-y-2">
       <div className="flex justify-between items-center text-gray-700">
         <span>Subtotal</span>
 
         <div className="flex items-center gap-2">
-          {subtotal != cSubtotal && shouldCheck && !totalsRecalculated && (
+          {!isSubtotalValid && !totalsRecalculated && (
             <CircleAlert size={14} color="red" />
           )}
 
           <span className="font-semibold">
-            {(shouldCheck && !totalsRecalculated ? subtotal : cSubtotal).toFixed(2)} {currency}
+            {(!isSubtotalValid ? doc.subtotal! : currentSubtotal).toFixed(2)}{" "}
+            {currency}
           </span>
         </div>
       </div>
@@ -43,12 +43,16 @@ const TotalsWrapper = ({
         <span>Tax Total ({taxPercent}%)</span>
 
         <div className="flex items-center gap-2">
-          {totalTax != cTotalTax && shouldCheck && !totalsRecalculated && (
+          {!isTotalTaxValid && !totalsRecalculated && (
             <CircleAlert size={14} color="red" />
           )}
 
           <span className="font-semibold">
-            {(shouldCheck && !totalsRecalculated ? totalTax : cTotalTax).toFixed(2)} {currency}
+            {(!isTotalTaxValid && !totalsRecalculated
+              ? doc.taxAmount!
+              : currentTotalTax
+            ).toFixed(2)}{" "}
+            {currency}
           </span>
         </div>
       </div>
@@ -57,12 +61,16 @@ const TotalsWrapper = ({
         <span className="font-bold text-gray-900">Total Amount</span>
 
         <div className="flex items-center gap-2">
-          {totalAmount != cTotalAmount && shouldCheck && !totalsRecalculated && (
+          {!isTotalAmountValid && !totalsRecalculated && (
             <CircleAlert size={17} color="red" />
           )}
 
           <span className="font-bold text-gray-900">
-            {(shouldCheck && !totalsRecalculated ? totalAmount : cTotalAmount).toFixed(2)} {currency}
+            {(!isTotalAmountValid && !totalsRecalculated
+              ? doc.totalAmount!
+              : currentTotalAmount
+            ).toFixed(2)}{" "}
+            {currency}
           </span>
         </div>
       </div>

@@ -12,7 +12,6 @@ import TotalsWrapper from "../components/Totals-wrapper";
 import { DocumentType } from "../enums/document-type";
 import { docValidationSchema } from "../shema/doc-validation-shema";
 import { useRef, useState } from "react";
-import { DocumentStatus } from "../enums/document-status";
 import DocumentDetailsAction from "../components/Document-details-action";
 
 const DocumentDetails = () => {
@@ -25,6 +24,18 @@ const DocumentDetails = () => {
   const { isLoading, data, refetch } = useQuery({
     queryKey: ["documentData", id],
     queryFn: () => documentService.getDocumentDetails(id!),
+    select: (data) => {
+      const subtotal = data.lineItems.reduce((a, b) => a + (b.total || 0), 0);
+      const totalTax = subtotal * ((data.taxPercent || 0) / 100);
+      const totalAmount = subtotal + totalTax;
+
+      return {
+        ...data,
+        cSubtotal: subtotal,
+        cTotalTax: totalTax,
+        cTotalAmount: totalAmount,
+      };
+    },
     enabled: !!id,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
@@ -48,40 +59,27 @@ const DocumentDetails = () => {
 
   return (
     <div className="flex flex-col min-h-screen w-screen bg-gray-50 px-10 p-6 font-sans text-gray-800 overflow-hidden tabular-nums">
-      <DocumentDetailsHeader doc={data?.data!} />
+      <DocumentDetailsHeader doc={data!} />
 
       {isLoading ? (
         <DocumentDetailsSkeleton />
       ) : (
-        <div className="flex flex-col lg:flex-row gap-10 h-full overflow-auto">
+        <div className="flex flex-col items-center xl:flex-row xl:items-stretch gap-10 h-full overflow-auto">
           <Formik
             innerRef={formikRef}
-            initialValues={data?.data!}
+            initialValues={data!}
             validationSchema={docValidationSchema}
             validateOnMount={true}
             onSubmit={async (values, { setSubmitting, resetForm }) => {
-              const {
-                _id,
-                createdAt,
-                mediaType,
-                name,
-                path,
-                size,
-                status,
-                updatedAt,
-                __v,
-                ...changes
-              } = values as any;
-
               const updateParams = {
-                ...changes,
-                taxPercent: +changes.taxPercent,
+                ...values,
+                taxPercent: +values.taxPercent!,
                 taxAmount: totalTaxRef.current,
                 subtotal: subtotalRef.current,
                 totalAmount: totalAmountRef.current,
               };
 
-              toast.promise(updateDocumentData(_id, updateParams), {
+              toast.promise(updateDocumentData(values._id, updateParams), {
                 loading: "Updating document data...",
                 success: async (data) => {
                   await refetch();
@@ -295,29 +293,20 @@ const DocumentDetails = () => {
                         <hr className="border-gray-300 border-dashed my-6" />
 
                         <TotalsWrapper
-                          cSubtotal={subtotalRef.current}
-                          cTotalTax={totalTaxRef.current}
-                          cTotalAmount={totalAmountRef.current}
-                          subtotal={values.subtotal || 0}
-                          totalTax={values.taxAmount || 0}
-                          totalAmount={values.totalAmount || 0}
+                          doc={data!}
                           currency={values.currency || ""}
                           taxPercent={values.taxPercent || 0}
-                          shouldCheck={
-                            values.status != DocumentStatus.VALIDATED
-                          }
+                          currentSubtotal={subtotalRef.current}
+                          currentTotalTax={totalTaxRef.current}
+                          currentTotalAmount={totalAmountRef.current}
                           totalsRecalculated={totalsRecalculated}
                         />
                       </div>
 
                       <DocumentDetailsAction
-                        cSubtotal={subtotalRef.current}
-                        cTotalTax={totalTaxRef.current}
-                        cTotalAmount={totalAmountRef.current}
-                        subtotal={values.subtotal || 0}
-                        totalTax={values.taxAmount || 0}
-                        totalAmount={values.totalAmount || 0}
-                        shouldCheck={values.status != DocumentStatus.VALIDATED}
+                        isSubtotalValid={data?.subtotal == data?.cSubtotal}
+                        isTotalTaxValid={data?.taxAmount == data?.cTotalTax}
+                        isTotalAmountValid={data?.totalAmount == data?.cTotalAmount}
                         isSubmitting={isSubmitting}
                         isValid={isValid}
                         dirty={dirty}
@@ -332,9 +321,11 @@ const DocumentDetails = () => {
             }}
           </Formik>
 
-          <div className="w-xl flex flex-col relative">
-            <div>
+          <div className="w-full flex relative">
+            <div className="w-full max-w-2xl mx-auto flex flex-col h-full">
               <h2 className="font-semibold text-lg mb-4">Preview</h2>
+
+              <div className="border border-gray-400 h-full rounded-xl"></div>
             </div>
           </div>
         </div>
