@@ -1,3 +1,11 @@
-# Mastery Task UI
+# Smart Document Processing System  
+## Take-Home Engineering Task
 
-Take-Home Engineering Task
+
+1 - Clone git repo.
+
+2 - Install dependencies: npm install
+
+3 - Run locally: npm run dev
+
+4 - Production build: npm run build
